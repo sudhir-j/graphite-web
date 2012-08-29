@@ -55,7 +55,7 @@ function createComposerWindow(myComposer) {
     tbar: topToolbar,
     buttons: bottomToolbar,
     buttonAlign: 'left',
-    items: { html: "<img id='image-viewer' src='/render'/>", region: "center" },
+    items: { html: "<div id='chart-viewer' class='graph-window' ></div><img id='image-viewer' src='/render'/>", region: "center" },
     listeners: {
       activate: keepDataWindowOnTop,
       show: fitImageToWindow,
@@ -1081,6 +1081,13 @@ function createOptionsMenu() {
     ]
   });
 
+  var graphFormatMenu = new Ext.menu.Menu({
+    items: [
+      menuRadioItem("GraphFormat", "Highcharts", "graphFormat", "highcharts"),
+      menuRadioItem("GraphFormat", "Image (Conventional)", "graphFormat", "img"),
+    ]
+  });
+
   var areaMenu = new Ext.menu.Menu({
     items: [
       menuRadioItem("area", "None", "areaMode", ""),
@@ -1168,7 +1175,8 @@ function createOptionsMenu() {
       {text: "Line Mode", menu: lineMenu},
       {text: "Area Mode", menu: areaMenu},
       {text: "X-Axis", menu: xAxisMenu},
-      {text: "Y-Axis", menu: yAxisMenu}
+      {text: "Y-Axis", menu: yAxisMenu},
+      {text: "Graph Format", menu: graphFormatMenu}
     ]
   };
 }

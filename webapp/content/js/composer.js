@@ -15,6 +15,10 @@
 var RENDER_BASE_URL = window.location.protocol + "//" + window.location.host + window.location.pathname;
 RENDER_BASE_URL = RENDER_BASE_URL.replace(/\/composer\/?.*$/, '/render/?');
 
+var composerConfig = {
+  graphFormat: 'highcharts' // or 'img'
+};
+
 /* GraphiteComposer encapsulates a set of Ext UI Panels,
  * as well as a ParameterizedURL for the displayed graph. */
 function GraphiteComposer () {
@@ -91,11 +95,42 @@ GraphiteComposer.prototype = {
   updateImage: function () {
     /* Set the image's url to reflect this.url's current params */
     var img = this.window.getImage();
+    var chartDiv = Ext.get('chart-viewer');
+    /*may not need this check*/
     if (img) {
       var now = new Date();
       var unixTime = now.valueOf() / 1000;
       this.url.setParam('_salt', unixTime.toString() );
-      img.src = this.url.getURL();
+      var graphFormat = composerConfig.graphFormat;
+      if (this.url.getParam('graphFormat')) {
+        graphFormat = this.url.getParam('graphFormat');
+      }
+      switch (graphFormat) {
+        case 'highcharts':
+          chartDiv = chartDiv.dom;
+          var title = this.url.getParam('title');
+          Ext.Ajax.request({
+            url: this.url.getJsonURL(),
+            success: function (resp) {
+              var data = Ext.decode(resp.responseText);
+          var options = {
+    	    graphType : 'line',
+            containerId : chartDiv,
+            data : data,
+            graphTitle : title 
+          };
+            var chart = new HighchartsTimeseriesGraph(options);
+            chart.create();
+            },
+            failure: function () {
+              Ext.MessageBox.alert('Error', 'Error loading graph');
+            }
+          });
+          break;
+        default :
+          chartDiv.update('<img src="'+this.url.getURL()+'" >');
+	  break;
+      }
     }
   },
 
@@ -139,6 +174,11 @@ ParameterizedURL.prototype = {
   getURL: function () {
     /* Return the current URL */
     return this.baseURL + this.queryString;
+  },
+
+  getJsonURL: function () {
+    /* Return the current URL */
+    return this.baseURL + this.queryString + "&format=json";
   },
 
   /*   Parameter modification methods   */
