@@ -29,6 +29,14 @@ limitations under the License. -->
 
     <script type="text/javascript">
       /* A global cache of current metadata about metrics the user selects */
+      {% if querystring %}
+      var queryString = {{querystring|safe}};
+      {% endif %}
+      var UI_CONFIG = {{ui_config_json|safe}};
+      var CONTEXT_FIELD_WIDTH = 180;
+      var AUTOCOMPLETE_DELAY = UI_CONFIG.autocomplete_delay;
+      var schemes_json = {};
+      var schemes = {{schemes_json|safe}};
       var TargetRecord = new Ext.data.Record.create(['value']);
 
       var TargetStore = new Ext.data.ArrayStore({
@@ -86,6 +94,7 @@ limitations under the License. -->
     <script type="text/javascript" src="/content/js/composer_widgets.js"></script>
     <script type="text/javascript" src="/content/js/composer.js"></script>
     <script type="text/javascript" src="/content/js/completer.js"></script>
+    <script type="text/javascript" src="/content/js/search-contextwise.js"></script>
 
     <style type="text/css">
     /* Hack to fix this bug http://extjs.net/forum/showthread.php?s=a570aba1bf2fc67a2287684c5d91c662&t=74230 */

@@ -16,6 +16,7 @@ function GraphiteBrowser () {
   var treePanel = createTreePanel();
   var searchPanel = createSearchPanel();
   var completerPanel = createCompleterPanel();
+  var contextNavbar = createContextNavbar();
   var treeRoot = treePanel.getRootNode();
 
   this.trees = {
@@ -26,7 +27,7 @@ function GraphiteBrowser () {
 
   this.panel = new Ext.TabPanel({
     region: 'west',
-    items: [treePanel, searchPanel, completerPanel],
+    items: [contextNavbar, treePanel, searchPanel, completerPanel],
     split: true,
     width: 300,
     collapsible: true,

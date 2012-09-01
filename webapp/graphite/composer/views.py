@@ -22,9 +22,11 @@ from httplib import HTTPConnection
 from urlparse import urlsplit
 from time import ctime, strftime
 from traceback import format_exc
+from graphite.util import json
 from graphite.util import getProfile
 from graphite.logger import log
 from graphite.account.models import MyGraph
+from graphite.dashboard.views import DashboardConfig
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
@@ -32,8 +34,20 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 def composer(request):
+  config = DashboardConfig()
+  try:
+    config.check()
+  except OSError, e:
+    if e.errno == errno.ENOENT:
+      dashboard_conf_missing = True
+    else:
+      raise
+
   profile = getProfile(request)
   context = {
+    'schemes_json' : json.dumps(config.schemes),
+    'querystring' : json.dumps( dict( request.GET.items() ) ),
+    'ui_config_json' : json.dumps(config.ui_config),
     'queryString' : request.GET.urlencode().replace('+','%20'),
     'showTarget' : request.GET.get('showTarget',''),
     'user' : request.user,
